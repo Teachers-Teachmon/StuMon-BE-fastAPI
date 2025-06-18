@@ -17,6 +17,27 @@ def get_students_by_partial_name(partial_name: str):
     combined = [f"{student['name']}({student['student_number']})" for student in students]
     return combined
 
+def get_profile(username: str):
+    result = (
+        supabase
+        .table("student")
+        .select("name, student_number, profile_image")
+        .eq("name", username)
+        .single()
+        .execute()
+    )
+    student = result.data
+    print(student)
+    sn = student["student_number"]
+    grade = sn // 1000
+    klass = (sn % 1000) // 100
+    seat = sn % 100
+    student_number = f"{grade}학년 {klass}반 {seat}번"
+    return {
+        "profile_image": student["profile_image"],
+        "name": student["name"],
+        "student_number": student_number,
+    }
 
 async def create_student(email: str, name: str, google_id: str, picture: str):
 

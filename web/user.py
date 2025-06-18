@@ -1,6 +1,8 @@
 import os
+from http.client import HTTPException
 
-from fastapi import APIRouter
+import jwt
+from fastapi import APIRouter, status
 from fastapi.params import Query
 from starlette.responses import RedirectResponse
 from service import user as service
@@ -26,6 +28,10 @@ oauth.register(
 @router.get("/")
 async def search_user(q : str = Query):
     return service.search_user(q)
+
+@router.get("/profile")
+async def get_profile(q : str = Query):
+    return service.get_profile(q)
 
 @router.get("/login")
 async def login(request : Request) :
