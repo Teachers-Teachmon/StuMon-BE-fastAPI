@@ -41,8 +41,8 @@ async def auth_callback(request: Request):
         "https://www.googleapis.com/oauth2/v3/userinfo", token=token
     )
     user = userinfo_response.json()
-
-    access_token = token.get("access_token")
+    print(token)
+    access_token = token.get("id_token")
 
     if service.callback(user, token) :
         redirect_url = f"http://localhost:5173/?token={access_token}"
