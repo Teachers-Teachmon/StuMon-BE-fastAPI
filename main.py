@@ -1,4 +1,5 @@
 import os
+import sys
 
 import uvicorn
 from fastapi import FastAPI, Request, Response
@@ -21,6 +22,7 @@ class DynamicCORSMiddleware(BaseHTTPMiddleware):
         return response
 
 app.add_middleware(DynamicCORSMiddleware)
+
 app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
 app.include_router(leave_seat.router)
 app.include_router(user.router)
