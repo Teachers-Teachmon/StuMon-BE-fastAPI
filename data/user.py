@@ -11,10 +11,9 @@ def get_students_by_partial_name(partial_name: str):
         .execute()
     )
 
-    # name + number 조합으로 변환
     students = result.data
 
-    combined = [f"{student['name']}({student['student_number']})" for student in students]
+    combined = [{"name": student["name"], "student_number": student["student_number"]} for student in students]
     return combined
 
 
