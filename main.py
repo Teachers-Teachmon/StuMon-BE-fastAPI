@@ -4,7 +4,7 @@ import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from web import user
-from web import leaveseat
+from web import leave_seat
 from starlette.middleware.sessions import SessionMiddleware
 app = FastAPI()
 
