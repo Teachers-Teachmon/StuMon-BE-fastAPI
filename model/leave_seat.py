@@ -16,6 +16,7 @@ class Place(BaseModel) :
     floor : int
 
 class LeaveSeatForm(BaseModel) :
+    cause : str
     place_id : int
     date : str
     students : List[Student]

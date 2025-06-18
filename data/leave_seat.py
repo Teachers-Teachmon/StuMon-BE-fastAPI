@@ -20,6 +20,7 @@ def all_place() ->Place:
 
 def form_leaveSate(student, form : LeaveSeatForm) :
     supabase.table("leave_seat").insert({
+        "cause": form.cause,
         "place_id": form.place_id,
         "student_id": student.id,
         "date": form.date,
