@@ -16,7 +16,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
-app.include_router(leaveseat.router)
+app.include_router(leave_seat.router)
 app.include_router(user.router)
 
 if __name__ == '__main__':

@@ -1,0 +1,8 @@
+from pydantic import BaseModel
+
+
+class Alert(BaseModel):
+    title : str
+    content : str
+    recipient : int
+    is_read : bool

@@ -18,3 +18,6 @@ async def get_leaveSeat(date : str) :
 async def post_leaveSeat(form : LeaveSeatForm = Body(...)) :
     return service.form_leaveSate(form)
 
+@router.post("/complete")
+def complete_leaveSeat(form : LeaveSeatForm = Body(...)) :
+    return service.complete_leaveSeat(form)
