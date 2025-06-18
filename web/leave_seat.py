@@ -9,7 +9,7 @@ router = APIRouter(prefix="/leaveseat")
 async def get_place() :
     return service.get_place()
 
-@router.get("/")
+@router.get("/{date}")
 async def get_leaveSeat(date : str) :
     return service.get_leaveSeat(date)
 

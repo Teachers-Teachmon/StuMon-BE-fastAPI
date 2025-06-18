@@ -1,18 +1,42 @@
+from collections import defaultdict
+
 from core.supabase_client import supabase
 from model.leave_seat import Place, LeaveSeatForm
 from model.student import Student
 
 
-def get_leaveSeat(date : str) :
-    result = (
+def get_leaveSeat(date: str):
+    res = (
         supabase
-        .table("leaveSeat")
-        .select("*")
+        .table("leave_seat")
+        .select(
+            "period, "
+            "place:place_id(name), "
+            "student:student_id(student_number, name)"
+        )
         .eq("date", date)
         .eq("status", "PENDING")
         .execute()
     )
-    return result.data
+    rows = res.data or []
+
+    groups: dict[tuple[str, str], dict] = {}
+    for r in rows:
+        period = r["period"]
+        place_name = r["place"]["name"]
+        key = (period, place_name)
+
+        if key not in groups:
+            groups[key] = {
+                "period":   period,
+                "place":    place_name,
+                "students": []
+            }
+
+        stu = r["student"]
+        groups[key]["students"].append(f"{stu['student_number']} {stu['name']}")
+
+    return {"data": list(groups.values())}
 
 def all_place() ->Place:
     result = supabase.table("place").select("*").execute()
