@@ -1,4 +1,5 @@
 import os
+import sys
 
 import uvicorn
 from fastapi import FastAPI
@@ -8,7 +9,7 @@ from web import leave_seat
 from web import alert
 from starlette.middleware.sessions import SessionMiddleware
 app = FastAPI()
-
+sys.dont_write_bytecode = True
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
