@@ -1,6 +1,6 @@
 from data import leave_seat as data
 from data import alert
-from model.alert import Alert
+from model.alert import AlertRes
 from model.leave_seat import LeaveSeatForm
 
 
@@ -29,7 +29,7 @@ def complete_leaveSeat(form: LeaveSeatForm):
 
     for student in form.students:
         data.update_leaveSeat(student, form)
-        leaveSeatAlert = Alert(
+        leaveSeatAlert = AlertRes(
             title="이석 신청이 완료되었어요!",
             content=f"{form.date} {period} '{place[0]["name"]}'에 이석이 완료되었습니다!",
             recipient=student.id,

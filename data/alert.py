@@ -1,8 +1,8 @@
 from core.supabase_client import supabase
-from model.alert import Alert
+from model.alert import AlertRes
 
 
-def sent_alert(leaveSeatAlert : Alert) :
+def sent_alert(leaveSeatAlert : AlertRes) :
     supabase.table("alert").insert({
         "title" : leaveSeatAlert.title,
         "content" : leaveSeatAlert.content,
