@@ -6,14 +6,13 @@ def get_students_by_partial_name(partial_name: str):
     result = (
         supabase
         .table("student")
-        .select("name, student_number")
+        .select("*")
         .ilike("name", f"%{partial_name}%")  # 대소문자 구분 없이 포함된 이름 검색
         .execute()
     )
 
     students = result.data
-
-    combined = [{"name": student["name"], "student_number": student["student_number"]} for student in students]
+    combined = [{"name": student["name"], "student_number": student["student_number"], "id" : student['id']} for student in students]
     return combined
 
 
