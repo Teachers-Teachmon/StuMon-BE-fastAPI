@@ -1,34 +1,27 @@
 import os
 import uvicorn
 from fastapi import FastAPI, Request, Response
-from starlette.middleware.base import BaseHTTPMiddleware
+from starlette.middleware.cors import CORSMiddleware
+import os
 from web import user
 from web import leave_seat
 from web import alert
 from starlette.middleware.sessions import SessionMiddleware
 app = FastAPI()
-# 미들웨어 수정
-# from fastapi.middleware.cors import CORSMiddleware
-#
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["https://stu-mon-fe.vercel.app/"],  # 단일 허용 도메인
-#     allow_credentials=True,
-#     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-#     allow_headers=["Authorization", "Content-Type"],
-# )
-class DynamicCORSMiddleware(BaseHTTPMiddleware):
-    async def dispatch(self, request: Request, call_next):
-        response: Response = await call_next(request)
-        origin = request.headers.get("origin")
-        if origin:
-            response.headers["Access-Control-Allow-Origin"] = origin
-            response.headers["Access-Control-Allow-Credentials"] = "true"
-            response.headers["Access-Control-Allow-Methods"] = "GET,POST,PUT,DELETE,OPTIONS"
-            response.headers["Access-Control-Allow-Headers"] = "Authorization,Content-Type"
-        return response
 
-app.add_middleware(DynamicCORSMiddleware)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5173",
+        "https://stu-mon-fe.vercel.app"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
+
 app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
 app.include_router(leave_seat.router)
 app.include_router(user.router)
