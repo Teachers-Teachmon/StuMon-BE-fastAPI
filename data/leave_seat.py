@@ -44,7 +44,7 @@ def form_leaveSate(student, form : LeaveSeatForm) :
     supabase.table("leave_seat").insert({
         "cause": form.cause,
         "place_id": form.place_id,
-        "student_id": student.student_number,
+        "student_id": student.id,
         "date": form.date,
         "period": form.period,
         "status": "PENDING"
@@ -57,7 +57,7 @@ def update_leaveSeat(student : Student, form : LeaveSeatForm) :
     (supabase.table("leave_seat")
      .update({"status": "COMPLETED"})
      .eq("place_id", form.place_id)
-     .eq("student_id", student.student_number)
+     .eq("student_id", student.id)
      .eq("period", form.period)
      .eq("date", form.date)
      .execute())
