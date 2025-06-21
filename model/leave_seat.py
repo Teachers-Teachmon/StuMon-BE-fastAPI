@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
 from model.student import Student
 
@@ -17,7 +17,8 @@ class Place(BaseModel) :
 
 class LeaveSeatForm(BaseModel) :
     cause : str
-    place_id : int
+    place_name : Optional[str] = None
     date : str
+    place_id : Optional[int] = None
     students : List[Student]
     period : str

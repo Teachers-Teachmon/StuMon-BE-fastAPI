@@ -52,6 +52,10 @@ def form_leaveSate(student, form : LeaveSeatForm) :
 
     return {"message": "success"}
 
+def from_name_to_id(name: str) :
+    result = supabase.table("place").select("id").eq("name", name).execute()
+    print(result.data)
+    return result.data[0]["id"]
 
 def update_leaveSeat(student : Student, form : LeaveSeatForm) :
     (supabase.table("leave_seat")

@@ -12,6 +12,8 @@ def get_place() :
     return data.all_place()
 
 def form_leaveSate(form: LeaveSeatForm):
+    place_id = data.from_name_to_id(form.place_name)
+    form.place_id = place_id
     for student in form.students:
         data.form_leaveSate(student, form)  # 동기 함수 호출
 
