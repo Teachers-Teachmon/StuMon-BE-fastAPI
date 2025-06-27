@@ -16,4 +16,3 @@ async def callback(user, token) :
     google_id = user.get("sub")
 
     return data.create_student(email, name, google_id, picture)
-    # student_number = email.split("@")[0] if email else None
