@@ -7,6 +7,12 @@ from service import user as service
 from fastapi import Request
 from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
+from jose import jwt
+from data import user as data
+
+from utils.auth import create_AT
+
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
 router = APIRouter(prefix="/auth")
 
@@ -41,10 +47,33 @@ async def auth_callback(request: Request):
         "https://www.googleapis.com/oauth2/v3/userinfo", token=token
     )
     user = userinfo_response.json()
-    print(token)
-    access_token = token.get("id_token")
 
     if service.callback(user, token) :
-        redirect_url = f"http://localhost:5173/?token={access_token}"
-        return RedirectResponse(url=redirect_url)
+        email = user.get("email")
+        name = user.get("name")
+        picture = user.get("picture")
+
+        access_token = token.get("id_token")
+
+        user_id = data.get_user_id(email)
+        payload = {
+            "user_id": user_id,
+            "email": email,
+            "name": name,
+            "picture": picture
+        }
+
+        jwt_token = create_AT(payload)
+        redirect_response = RedirectResponse(url="http://localhost:5173/auth")
+
+        redirect_response.set_cookie(
+            key="access_token",
+            value=jwt_token,
+            httponly=False,
+            secure=False,  # 배포 시 True
+            samesite="lax",
+            max_age=3600  # 1시간 유효
+        )
+
+        return redirect_response
     return {"message": "User not found"}

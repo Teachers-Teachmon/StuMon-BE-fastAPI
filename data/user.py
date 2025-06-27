@@ -34,3 +34,7 @@ async def create_student(email: str, name: str, google_id: str, picture: str):
         }).execute()
 
     return True
+
+def get_user_id(email: str):
+    result = supabase.table("student").select("id").eq("email", email).execute()
+    return result.data[0]["id"]

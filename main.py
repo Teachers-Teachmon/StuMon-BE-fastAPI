@@ -1,6 +1,5 @@
-import os
 import uvicorn
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
 import os
 from web import user
@@ -22,7 +21,6 @@ app.add_middleware(
 
 app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
 
-app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
 app.include_router(leave_seat.router)
 app.include_router(user.router)
 app.include_router(alert.router)

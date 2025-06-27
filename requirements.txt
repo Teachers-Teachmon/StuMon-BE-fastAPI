@@ -5,3 +5,4 @@ python-dotenv==1.0.1
 supabase
 Authlib==1.6.0
 itsdangerous==2.2.0
+python-jose==3.5.0
