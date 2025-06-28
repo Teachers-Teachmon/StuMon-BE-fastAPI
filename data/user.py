@@ -21,22 +21,35 @@ def get_profile(username: str):
     result = (
         supabase
         .table("student")
-        .select("name, student_number, profile_image")
+        .select("id, name, student_number, profile_image")
         .eq("name", username)
         .single()
         .execute()
     )
     student = result.data
-    print(student)
     sn = student["student_number"]
     grade = sn // 1000
     klass = (sn % 1000) // 100
     seat = sn % 100
     student_number = f"{grade}학년 {klass}반 {seat}번"
+
+    after_school_result = (
+        supabase
+        .table("after_school")
+        .select("t_name, period, place(name), name, day")
+        .eq("type", "AFTER_SCHOOL")
+        .eq("s_id", student["id"])
+        .execute()
+    )
+
+
+
+    after_school = []
     return {
         "profile_image": student["profile_image"],
         "name": student["name"],
         "student_number": student_number,
+        "after_school": after_school
     }
 
 async def create_student(email: str, name: str, google_id: str, picture: str):
