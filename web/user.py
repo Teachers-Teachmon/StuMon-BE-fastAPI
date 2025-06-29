@@ -69,7 +69,8 @@ async def auth_callback(request: Request):
         }
 
         jwt_token = create_AT(payload)
-        redirect_response = RedirectResponse(url="http://localhost:5173/auth")
+        url = os.getenv("FRONTEND_URL") + "auth"
+        redirect_response = RedirectResponse(url=url)
 
         redirect_response.set_cookie(
             key="access_token",
