@@ -2,7 +2,6 @@ from core.supabase_client import supabase
 import random
 
 def get_students_by_partial_name(partial_name: str):
-    print(partial_name)
     result = (
         supabase
         .table("student")
@@ -10,7 +9,8 @@ def get_students_by_partial_name(partial_name: str):
         .ilike("name", f"%{partial_name}%")  # 대소문자 구분 없이 포함된 이름 검색
         .execute()
     )
-
+    if not result.data:
+        return []
     students = result.data
     combined = [{"name": student["name"], "student_number": student["student_number"], "id" : student['id']} for student in students]
     return combined
