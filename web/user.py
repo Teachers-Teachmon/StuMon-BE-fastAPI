@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 from jose import jwt
 from data import user as data
 
-from utils.auth import create_AT
+from utils.auth import create_AT, decode_AT
 
 SECRET_KEY = os.getenv("JWT_SECRET_KEY")
 
@@ -28,10 +28,15 @@ oauth.register(
     client_kwargs={'scope': 'openid email profile'},
 )
 
-
 @router.get("/")
 async def search_user(q : str = Query):
     return service.search_user(q)
+
+@router.get("/me")
+def get_me(request: Request):
+    token = request.cookies.get("access_token")
+    user_id: int = decode_AT(token)["user_id"]
+    return service.get_me(user_id)
 
 @router.get("/login")
 async def login(request : Request) :

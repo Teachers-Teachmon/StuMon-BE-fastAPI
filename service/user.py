@@ -16,3 +16,7 @@ async def callback(user, token) :
     google_id = user.get("sub")
 
     return data.create_student(email, name, google_id, picture)
+
+
+def get_me(user_id: int):
+    return data.get_me(user_id)
