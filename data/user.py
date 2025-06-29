@@ -60,7 +60,7 @@ def get_me(user_id):
         supabase
         .table("after_school")
         .select("t_name, period, place(name), name, day")
-        .eq("type", "AFTER_SCHOOL")
+        .in_("type", ["AFTER_SCHOOL", "SELF_STUDY"])
         .eq("s_id", user_id)
         .execute()
     )
