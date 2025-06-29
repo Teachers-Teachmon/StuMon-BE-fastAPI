@@ -20,7 +20,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.add_middleware(SessionMiddleware, secret_key=os.environ["SESSION_SECRET_KEY"])
+app.add_middleware(SessionMiddleware, session_cookie="cookie", same_site="none", secret_key=os.environ["SESSION_SECRET_KEY"])
 
 app.include_router(leave_seat.router)
 app.include_router(user.router)
