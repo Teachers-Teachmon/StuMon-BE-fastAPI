@@ -98,9 +98,9 @@ async def auth_callback(request: Request):
         redirect_response.set_cookie(
             key="access_token",
             value=jwt_token,
-            httponly=False,
-            secure=True,   # 배포 환경에선 반드시 True
-            samesite="lax",
+            httponly=False,  # 배포에선 True 권장
+            secure=True,  # HTTPS 필수
+            samesite="None",  # Cross-Origin에선 무조건 None
             max_age=3600
         )
 
