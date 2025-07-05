@@ -9,6 +9,7 @@ from authlib.integrations.starlette_client import OAuth
 from dotenv import load_dotenv
 from jose import jwt
 from data import user as data
+from fastapi import HTTPException
 
 from utils.auth import create_AT, decode_AT
 
@@ -47,13 +48,31 @@ async def login(request : Request) :
 @router.get("/callback")
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
+    if token:
+        print("✅ token이 있습니다.")
+    else:
+        print("❌ token이 없습니다.")
+        raise HTTPException(status_code=400, detail="OAuth token was not returned.")
 
     userinfo_response = await oauth.google.get(
         "https://www.googleapis.com/oauth2/v3/userinfo", token=token
     )
     user = userinfo_response.json()
 
-    if service.callback(user, token) :
+    if user:
+        print("✅ user 정보가 있습니다.")
+    else:
+        print("❌ user 정보가 없습니다.")
+
+    if "email" in user:
+        print(f"✅ email이 있습니다: {user['email']}")
+    else:
+        print("❌ email이 없습니다.")
+        raise HTTPException(status_code=404, detail="User information not found.")
+
+    callback_result = service.callback(user, token)
+    if callback_result:
+        print("✅ service.callback이 성공했습니다.")
         email = user.get("email")
         name = user.get("name")
         picture = user.get("picture")
@@ -78,8 +97,12 @@ async def auth_callback(request: Request):
             httponly=False,
             secure=False,  # 배포 시 True
             samesite="lax",
-            max_age=3600  # 1시간 유효
+            max_age=3600
         )
 
+        print("✅ 리디렉션 및 쿠키 설정 완료.")
+
         return redirect_response
-    return {"message": "User not found"}
+    else:
+        print("❌ service.callback이 실패했습니다.")
+        raise HTTPException(status_code=400, detail="Callback processing failed.")
