@@ -45,6 +45,7 @@ async def login(request : Request) :
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
 
+
 @router.get("/callback")
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
@@ -63,46 +64,39 @@ async def auth_callback(request: Request):
         print("✅ user 정보가 있습니다.")
     else:
         print("❌ user 정보가 없습니다.")
+        raise HTTPException(status_code=404, detail="User information not found.")
 
     if "email" in user:
         print(f"✅ email이 있습니다: {user['email']}")
     else:
         print("❌ email이 없습니다.")
-        raise HTTPException(status_code=404, detail="User information not found.")
+        raise HTTPException(status_code=404, detail="User email not found.")
 
     callback_result = service.callback(user, token)
     if callback_result:
         print("✅ service.callback이 성공했습니다.")
+
         email = user.get("email")
         name = user.get("name")
         picture = user.get("picture")
-
-        access_token = token.get("id_token")
 
         user_id = data.get_user_id(email)
         payload = {
             "user_id": user_id,
             "email": email,
             "name": name,
-            "picture": picture
+            "picture": picture,
         }
 
         jwt_token = create_AT(payload)
-        url = os.getenv("FRONTEND_URL") + "auth"
-        redirect_response = RedirectResponse(url=url)
 
-        redirect_response.set_cookie(
-            key="access_token",
-            value=jwt_token,
-            httponly=False,
-            secure=False,  # 배포 시 True
-            samesite="lax",
-            max_age=3600
-        )
+        # 쿼리스트링으로 토큰 전달
+        frontend_url = os.getenv("FRONTEND_URL")
+        url = f"{frontend_url}auth?token={jwt_token}"
 
-        print("✅ 리디렉션 및 쿠키 설정 완료.")
+        print(f"✅ 리디렉션 URL: {url}")
 
-        return redirect_response
+        return RedirectResponse(url=url)
     else:
         print("❌ service.callback이 실패했습니다.")
         raise HTTPException(status_code=400, detail="Callback processing failed.")
