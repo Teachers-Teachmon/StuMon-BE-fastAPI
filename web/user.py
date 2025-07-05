@@ -44,7 +44,6 @@ async def login(request : Request) :
     redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
-
 @router.get("/callback")
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
@@ -90,23 +89,13 @@ async def auth_callback(request: Request):
         jwt_token = create_AT(payload)
 
         frontend_url = os.getenv("FRONTEND_URL")
-        url = f"{frontend_url}auth"
+        # 쿼리스트링으로 토큰 전달
+        url = f"{frontend_url}auth?token={jwt_token}"
 
         print(f"✅ 리디렉션 URL: {url}")
 
-        redirect_response = RedirectResponse(url=url)
-        redirect_response.set_cookie(
-            key="access_token",
-            value=jwt_token,
-            httponly=False,  # 배포에선 True 권장
-            secure=True,  # HTTPS 필수
-            samesite="None",  # Cross-Origin에선 무조건 None
-            max_age=3600
-        )
+        return RedirectResponse(url=url)
 
-        print("✅ 쿠키 설정 완료.")
-
-        return redirect_response
     else:
         print("❌ service.callback이 실패했습니다.")
         raise HTTPException(status_code=400, detail="Callback processing failed.")
