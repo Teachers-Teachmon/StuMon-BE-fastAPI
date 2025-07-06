@@ -9,11 +9,11 @@ def get_leaveSeat(date: str):
         .table("leave_seat")
         .select(
             "period, "
+            "status, "
             "place:place_id(name), "
             "student:student_id(student_number, name)"
         )
         .eq("date", date)
-        .eq("status", "PENDING")
         .execute()
     )
     rows = res.data or []
