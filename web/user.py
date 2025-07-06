@@ -33,11 +33,28 @@ oauth.register(
 async def search_user(q : str = Query):
     return service.search_user(q)
 
+from fastapi import HTTPException
+
 @router.get("/me")
 def get_me(request: Request):
     token = request.cookies.get("access_token")
-    user_id: int = decode_AT(token)["user_id"]
-    return service.get_me(user_id)
+
+    if not token:
+        raise HTTPException(status_code=401, detail="No token provided")
+
+    try:
+        decoded = decode_AT(token)
+        user_id: int = decoded["user_id"]
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid or expired token: {e}")
+
+    try:
+        user_info = service.get_me(user_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"User retrieval failed: {e}")
+
+    return user_info
+
 
 @router.get("/login")
 async def login(request : Request) :
