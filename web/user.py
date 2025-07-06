@@ -47,56 +47,35 @@ async def login(request : Request) :
 @router.get("/callback")
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
-    if token:
-        print("✅ token이 있습니다.")
-    else:
-        print("❌ token이 없습니다.")
-        raise HTTPException(status_code=400, detail="OAuth token was not returned.")
-
     userinfo_response = await oauth.google.get(
         "https://www.googleapis.com/oauth2/v3/userinfo", token=token
     )
     user = userinfo_response.json()
 
-    if user:
-        print("✅ user 정보가 있습니다.")
-    else:
-        print("❌ user 정보가 없습니다.")
-        raise HTTPException(status_code=404, detail="User information not found.")
+    email = user.get("email")
+    name = user.get("name")
+    picture = user.get("picture")
 
-    if "email" in user:
-        print(f"✅ email이 있습니다: {user['email']}")
-    else:
-        print("❌ email이 없습니다.")
-        raise HTTPException(status_code=404, detail="User email not found.")
+    user_id = data.get_user_id(email)
 
-    callback_result = service.callback(user, token)
-    if callback_result:
-        print("✅ service.callback이 성공했습니다.")
+    # 여러 값 저장
+    request.session.update({
+        "user_id": user_id,
+        "email": email,
+        "name": name,
+        "picture": picture
+    })
 
-        email = user.get("email")
-        name = user.get("name")
-        picture = user.get("picture")
+    payload = {
+        "user_id": user_id,
+        "email": email,
+        "name": name,
+        "picture": picture
+    }
 
-        user_id = data.get_user_id(email)
-        request.session["user_id"] = user_id
-        payload = {
-            "user_id": user_id,
-            "email": email,
-            "name": name,
-            "picture": picture,
-        }
+    jwt_token = create_AT(payload)
 
-        jwt_token = create_AT(payload)
+    frontend_url = os.getenv("FRONTEND_URL")
+    url = f"{frontend_url}/auth?token={jwt_token}"
 
-        frontend_url = os.getenv("FRONTEND_URL")
-        # 쿼리스트링으로 토큰 전달
-        url = f"{frontend_url}auth?token={jwt_token}"
-
-        print(f"✅ 리디렉션 URL: {url}")
-
-        return RedirectResponse(url=url)
-
-    else:
-        print("❌ service.callback이 실패했습니다.")
-        raise HTTPException(status_code=400, detail="Callback processing failed.")
+    return RedirectResponse(url=url)
