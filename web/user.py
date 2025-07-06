@@ -79,6 +79,7 @@ async def auth_callback(request: Request):
         picture = user.get("picture")
 
         user_id = data.get_user_id(email)
+        request.session["user_id"] = user_id
         payload = {
             "user_id": user_id,
             "email": email,
