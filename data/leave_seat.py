@@ -9,25 +9,28 @@ def get_leaveSeat(date: str):
         .table("leave_seat")
         .select(
             "period, "
-            "status, "
+            "status, "  
             "place:place_id(name), "
             "student:student_id(student_number, name)"
         )
         .eq("date", date)
         .execute()
     )
+    print(res.data)
     rows = res.data or []
 
     groups: dict[tuple[str, str], dict] = {}
     for r in rows:
         period = r["period"]
         place_name = r["place"]["name"]
+        status = r["status"]
         key = (period, place_name)
 
         if key not in groups:
             groups[key] = {
                 "period":   period,
                 "place":    place_name,
+                "status":   status,    # 여기 추가!
                 "students": []
             }
 
