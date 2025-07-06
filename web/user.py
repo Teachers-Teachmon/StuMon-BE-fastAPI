@@ -44,6 +44,8 @@ async def login(request : Request) :
     redirect_uri = os.getenv("GOOGLE_REDIRECT_URI")
     return await oauth.google.authorize_redirect(request, redirect_uri)
 
+from fastapi import Response
+
 @router.get("/callback")
 async def auth_callback(request: Request):
     token = await oauth.google.authorize_access_token(request)
@@ -58,14 +60,6 @@ async def auth_callback(request: Request):
 
     user_id = data.get_user_id(email)
 
-    # 여러 값 저장
-    request.session.update({
-        "user_id": user_id,
-        "email": email,
-        "name": name,
-        "picture": picture
-    })
-
     payload = {
         "user_id": user_id,
         "email": email,
@@ -73,9 +67,20 @@ async def auth_callback(request: Request):
         "picture": picture
     }
 
+    # ✅ JWT 생성
     jwt_token = create_AT(payload)
 
     frontend_url = os.getenv("FRONTEND_URL")
     url = f"{frontend_url}/auth?token={jwt_token}"
 
-    return RedirectResponse(url=url)
+    # ✅ RedirectResponse + Set-Cookie
+    response = RedirectResponse(url=url)
+    response.set_cookie(
+        key="access_token",    # 쿠키 이름
+        value=jwt_token,       # JWT 값
+        httponly=False,         # JavaScript에서 접근 불가
+        secure=True,           # HTTPS에서만 전송
+        samesite="none"        # 크로스사이트 허용
+    )
+
+    return response
