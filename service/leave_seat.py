@@ -40,3 +40,6 @@ def complete_leaveSeat(form: LeaveSeatForm):
         alert.sent_alert(leaveSeatAlert)
 
     return {"message": "처리 완료"}
+
+def get_place_id(name: str) :
+    return data.get_place_id(name)

@@ -21,3 +21,7 @@ async def post_leaveSeat(form : LeaveSeatForm = Body(...)) :
 @router.post("/complete")
 def complete_leaveSeat(form : LeaveSeatForm = Body(...)) :
     return service.complete_leaveSeat(form)
+
+@router.get("/place/{name}")
+def get_place_id(name) :
+    return service.get_place_id(name)

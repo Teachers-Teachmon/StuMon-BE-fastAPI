@@ -69,3 +69,7 @@ def update_leaveSeat(student : Student, form : LeaveSeatForm) :
 def get_place_by_id(id : int) :
     result = supabase.table("place").select("*").eq("id", id).execute()
     return result.data
+
+def get_place_id(name: str) :
+    result = supabase.table("place").select("id").eq("name", name).execute()
+    return result.data[0]["id"]
