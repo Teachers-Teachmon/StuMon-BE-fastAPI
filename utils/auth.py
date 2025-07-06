@@ -4,7 +4,7 @@ from datetime import datetime
 from jose import jwt, JWTError
 from starlette.requests import Request
 
-ACCESS_TOKEN_EXPIRE_MINUTES=0
+ACCESS_TOKEN_EXPIRE_MINUTES=30
 ALGORITHMS = "HS256"
 SECRET_KEY=os.getenv("JWT_SECRET_KEY")
 
